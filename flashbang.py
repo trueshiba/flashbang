@@ -4,7 +4,7 @@
 #  - twitch chat donation/ point redeem triggers call to execute this file
 #  - program plays sound in background
 #  - program sends command to windows create handle
-#  - program decreases alpha val and destroys window after set iterations
+#  - program decreases opacity of window and destroys it after set iterations
 #-----------------------------------#
 
 import time
@@ -21,56 +21,44 @@ def main():
 
     time.sleep(1)
 
-    bang()
+    bang(iters=15, starting_opacity=100, ending_opacity=0)
 
     # Optional wait period after getting flashbanged
-    #cooldown()
+    # cooldown()
 
 
 
-def bang(): 
+def bang(iters, starting_opacity, ending_opacity): 
     # Create Tk object
     root = Tk() 
     
     # Create flashbang window
-    root.attributes('-alpha',0.95) #         <-- edit this to change opacity
+    root.attributes('-alpha', 1.00) #         
     root.wm_attributes('-fullscreen',True) 
     root.wm_attributes("-topmost", True)
     root.wm_attributes("-disabled", True)
     root.lift()
 
+    # OPTIONAL: Comment this out for just a blank white screen.
     img = Image.open("brick.jpg")
     img = ImageTk.PhotoImage(img)
     img_label = Label(root, image=img)
     img_label.pack()
 
-    timeAfter = 300
-    alphaVal = 0.9
-    i = 0
+    time_after = 300
+    increment = (starting_opacity - ending_opacity) / iters
     
-    # I really wanted this to work but its like mixing oop with procedural and only updates a single time at the end.
-    # for i in range(10):
-    #     print(alphaVal)
-    #     #looking at variable after the fact after calculations have already happened
-    #     root.after(timeAfter, lambda: root.attributes("-alpha", (alphaVal)))
-    #     time.sleep(1)
-    #     timeAfter += 300
-    #     alphaVal -= 0.05
-    
-
-    # Nothing like manually setting window opacity :|
-    root.after(300, lambda: root.attributes("-alpha", 0.9))
-    root.after(600, lambda: root.attributes("-alpha", 0.85))
-    root.after(900, lambda: root.attributes("-alpha", 0.8))
-    root.after(1200, lambda: root.attributes("-alpha", 0.75))
-    root.after(1500, lambda: root.attributes("-alpha", 0.7))
-    root.after(1800, lambda: root.attributes("-alpha", 0.65))
-    root.after(2100, lambda: root.attributes("-alpha", 0.6))
-    root.after(2400, lambda: root.attributes("-alpha", 0.55))
-    root.after(2700, lambda: root.attributes("-alpha", 0.5))
+    # We can get around python not passing vars by value by waiting manualy a couple ms in between each root.after() call
+    for i in range(iters):
+        
+        # Divide opacity by 100 to get percent val between (0,1)
+        root.after(time_after, lambda: root.attributes("-alpha", ((starting_opacity - (i * increment)) / 100)))
+        time.sleep(0.2)
+        root.update()
+        time_after += 200
     
     
-    root.after(3000, lambda: root.destroy())
+    root.after(time_after, lambda: root.destroy())
 
     # Convert tkinter window into Handle object
     hWindow = pywintypes.HANDLE(int(root.frame(), 16))
@@ -87,8 +75,6 @@ def cooldown():
     for x in range(300):
         time.sleep(1)
         print(300 - x)
-
-    
 
 
 if __name__ == '__main__':

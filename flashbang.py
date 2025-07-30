@@ -21,7 +21,7 @@ def main():
 
     time.sleep(1)
 
-    bang(iters=15, starting_opacity=100, ending_opacity=0)
+    bang(iters=30, starting_opacity=100, ending_opacity=0)
 
     # Optional wait period after getting flashbanged
     # cooldown()
@@ -53,9 +53,9 @@ def bang(iters, starting_opacity, ending_opacity):
         
         # Divide opacity by 100 to get percent val between (0,1)
         root.after(time_after, lambda: root.attributes("-alpha", ((starting_opacity - (i * increment)) / 100)))
-        time.sleep(0.2)
+        time.sleep(0.1)
         root.update()
-        time_after += 200
+        time_after += 100
     
     
     root.after(time_after, lambda: root.destroy())
